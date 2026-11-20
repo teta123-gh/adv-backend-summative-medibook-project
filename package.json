@@ -1,0 +1,21 @@
+{
+  "name": "medibook-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clinic appointment booking API for the MediBook assessment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "worker": "node src/workers/worker.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.3",
+    "redis": "^5.8.2"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}
