@@ -124,7 +124,7 @@ Create a **simple HTML page** (served by your Express app at `GET /feedback`) co
 
 - Node.js 18+, MySQL 8.0.16+, and Redis 6.2+. MySQL 8.0.16 is required for enforced `CHECK` constraints.
 - The assessment does not specify a clinic timezone, so this implementation assumes UTC for appointment timestamps and working hours. API timestamps use `YYYY-MM-DDTHH:mm:ssZ`.
-- Copy `.env.example` to `.env` and fill in the MySQL connection values. Keep `.env` private; it is ignored by Git.
+- Copy `.env.example` to `.env` and fill in the MySQL and Redis connection values. For local Redis, keep `REDIS_URL=redis://localhost:6379`. For a hosted Redis-compatible service such as Upstash, use its TCP connection URL; it should start with `rediss://` when TLS is enabled. Keep `.env` private; it is ignored by Git.
 - Create and seed the database from the repository root:
 
   ```sh
