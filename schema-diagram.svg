@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1220" viewBox="0 0 1320 1220" role="img" aria-labelledby="title desc">
+  <title id="title">MediBook normalized database schema</title>
+  <desc id="desc">Three-table schema for patients, doctors, and appointments, with primary keys, foreign keys, constraints, and one-to-many relationships.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f5f7fb}.card{fill:#fff;stroke:#cbd5e1;stroke-width:2}.head{fill:#16324f}.appt{fill:#175b58}.title{font:700 25px Arial,sans-serif;fill:#fff}.subtitle{font:14px Arial,sans-serif;fill:#dbeafe}.row{font:15px 'Courier New',monospace;fill:#172b4d}.small{font:14px Arial,sans-serif;fill:#26364b}.notehead{font:700 16px Arial,sans-serif;fill:#16324f}.notetext{font:14px Arial,sans-serif;fill:#26364b}.line{fill:none;stroke:#486581;stroke-width:3}.label{font:700 13px Arial,sans-serif;fill:#334e68}.tag{font:700 12px Arial,sans-serif;fill:#175b58}
+    </style>
+  </defs>
+  <rect class="bg" width="1320" height="1220"/>
+  <text x="40" y="48" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#102a43">MediBook — Part A: normalized database schema</text>
+  <text x="40" y="76" class="small">Exactly three entities • MySQL types • primary/foreign keys • business constraints shown</text>
+
+  <!-- Relationships sit behind the table cards. -->
+  <path class="line" d="M510 300 H560 V375 H610"/><path class="line" d="M510 690 H560 V455 H610"/>
+  <text x="526" y="286" class="label">1 patient : many appointments</text>
+  <text x="526" y="710" class="label">1 doctor : many appointments</text>
+
+  <g>
+    <rect class="card" x="40" y="125" width="470" height="300" rx="12"/>
+    <path class="head" d="M52 125h446a12 12 0 0 1 12 12v48H40v-48a12 12 0 0 1 12-12z"/>
+    <text class="title" x="62" y="160">patients</text><text class="subtitle" x="62" y="179">People who book clinic appointments</text>
+    <text class="row" x="62" y="215">patient_id       BIGINT UNSIGNED  PK, AI, NOT NULL</text>
+    <text class="row" x="62" y="244">full_name        VARCHAR(120)     NOT NULL</text>
+    <text class="row" x="62" y="273">email            VARCHAR(255)     NOT NULL, UNIQUE</text>
+    <text class="row" x="62" y="302">phone            VARCHAR(30)      NOT NULL</text>
+    <text class="row" x="62" y="331">created_at       TIMESTAMP        NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
+    <text class="tag" x="62" y="389">UQ: email</text>
+  </g>
+
+  <g>
+    <rect class="card" x="40" y="545" width="470" height="330" rx="12"/>
+    <path class="head" d="M52 545h446a12 12 0 0 1 12 12v48H40v-48a12 12 0 0 1 12-12z"/>
+    <text class="title" x="62" y="580">doctors</text><text class="subtitle" x="62" y="599">Clinic doctors and their consultation details</text>
+    <text class="row" x="62" y="635">doctor_id        BIGINT UNSIGNED  PK, AI, NOT NULL</text>
+    <text class="row" x="62" y="664">full_name        VARCHAR(120)     NOT NULL</text>
+    <text class="row" x="62" y="693">specialty        VARCHAR(100)     NOT NULL</text>
+    <text class="row" x="62" y="722">consultation_fee DECIMAL(10,2)    NOT NULL, CHECK (&gt;= 0)</text>
+    <text class="row" x="62" y="751">room             VARCHAR(30)      NOT NULL</text>
+    <text class="row" x="62" y="780">created_at       TIMESTAMP        NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
+    <text class="tag" x="62" y="839">CK: consultation_fee &gt;= 0</text>
+  </g>
+
+  <g>
+    <rect class="card" x="610" y="125" width="670" height="835" rx="12"/>
+    <path class="appt" d="M622 125h646a12 12 0 0 1 12 12v48H610v-48a12 12 0 0 1 12-12z"/>
+    <text class="title" x="632" y="160">appointments</text><text class="subtitle" x="632" y="179">Booking plus retained cancellation and refund history</text>
+    <text class="row" x="632" y="215">appointment_id     BIGINT UNSIGNED  PK, AI, NOT NULL</text>
+    <text class="row" x="632" y="244">appointment_ref    VARCHAR(20)      NOT NULL, UNIQUE</text>
+    <text class="row" x="632" y="273">patient_id         BIGINT UNSIGNED  FK -&gt; patients.patient_id, NOT NULL</text>
+    <text class="row" x="632" y="302">doctor_id          BIGINT UNSIGNED  FK -&gt; doctors.doctor_id, NOT NULL</text>
+    <text class="row" x="632" y="331">appointment_datetime DATETIME       NOT NULL</text>
+    <text class="row" x="632" y="360">booked_at          DATETIME         NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
+    <text class="row" x="632" y="389">amount_paid        DECIMAL(10,2)    NOT NULL, CHECK (&gt;= 0)</text>
+    <text class="row" x="632" y="418">status             ENUM(confirmed,cancelled) NOT NULL, DEFAULT confirmed</text>
+    <text class="row" x="632" y="447">cancelled_at       DATETIME         NULL</text>
+    <text class="row" x="632" y="476">refund_amount      DECIMAL(10,2)    NOT NULL, DEFAULT 0, CHECK (&gt;= 0)</text>
+    <text class="row" x="632" y="505">active_doctor_id   BIGINT UNSIGNED GENERATED, NULLABLE</text>
+    <text class="row" x="632" y="534">  = doctor_id when confirmed; NULL when cancelled</text>
+    <line x1="632" y1="558" x2="1250" y2="558" stroke="#d9e2ec" stroke-width="2"/>
+    <text class="notehead" x="632" y="590">Keys and constraints</text>
+    <text class="notetext" x="632" y="619">PK: appointment_id • UQ: appointment_ref</text>
+    <text class="notetext" x="632" y="646">FKs: patient_id and doctor_id; delete is RESTRICT</text>
+    <text class="notetext" x="632" y="673">UQ(active_doctor_id, appointment_datetime): one active</text>
+    <text class="notetext" x="632" y="696">appointment per doctor slot; cancelled rows have NULL key</text>
+    <text class="notetext" x="632" y="731">CK: time is 09:00–16:30 on :00 or :30, zero seconds</text>
+    <text class="notetext" x="632" y="758">CK: status/cancelled_at consistent; 0 &lt;= refund &lt;= amount_paid</text>
+    <text class="notetext" x="632" y="803">Refund history stays on the cancelled appointment row.</text>
+    <text class="notetext" x="632" y="830">The freed slot can be booked again because cancelled rows</text>
+    <text class="notetext" x="632" y="853">do not participate in the active-slot unique key.</text>
+  </g>
+
+  <g>
+    <rect x="40" y="920" width="1240" height="250" rx="12" fill="#e8f1f8" stroke="#bcccdc" stroke-width="2"/>
+    <text class="notehead" x="65" y="955">Where each rule is enforced</text>
+    <text class="notetext" x="65" y="985">Database: NOT NULL / UNIQUE / CHECK constraints and foreign keys protect stored data.</text>
+    <text class="notetext" x="65" y="1014">Database concurrency: the active-slot unique key prevents two simultaneous bookings for the same doctor and time.</text>
+    <text class="notetext" x="65" y="1043">Transactional application logic: lock the doctor row while counting that day's active appointments; reject booking number 13.</text>
+    <text class="notetext" x="65" y="1072">Application validation: booking must be in the future. A CHECK constraint cannot safely compare with the moving current time.</text>
+    <text class="notetext" x="65" y="1101">Appointment status has only confirmed/cancelled; waitlist and notification queues live in Redis, not extra database entities.</text>
+    <text class="notetext" x="65" y="1130">Relationships: patients 1:N appointments • doctors 1:N appointments • every appointment has exactly one patient and one doctor.</text>
+  </g>
+</svg>
