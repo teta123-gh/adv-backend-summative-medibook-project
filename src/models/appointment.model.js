@@ -153,10 +153,21 @@ async function findConfirmedPatientBooking({ patientId, doctorId, appointmentDat
   return rows[0] || null;
 }
 
+async function isDoctorSlotBooked(doctorId, appointmentDateTime) {
+  const [rows] = await pool.execute(
+    `SELECT appointment_id FROM appointments
+     WHERE doctor_id = ? AND appointment_datetime = ? AND status = 'confirmed'
+     LIMIT 1`,
+    [doctorId, appointmentDateTime],
+  );
+  return rows.length > 0;
+}
+
 module.exports = {
   createBooking,
   cancelBooking,
   findAppointmentById,
   findNotificationDetails,
   findConfirmedPatientBooking,
+  isDoctorSlotBooked,
 };

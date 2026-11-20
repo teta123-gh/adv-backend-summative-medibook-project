@@ -8,6 +8,8 @@ const { appendAuditEvent } = require('../services/audit-logger');
 const { NOTIFICATION_QUEUE, PROMOTION_QUEUE, enqueueNotification } = require('../services/redis-queues');
 
 const WAITLIST_PROCESSING = 'waitlist:processing';
+const NOTIFICATION_PROCESSING = 'jobs:notifications:processing';
+const PROMOTION_PROCESSING = 'jobs:waitlist-promotions:processing';
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function slotQueueKey(doctorId, appointmentDateTime) {
@@ -62,6 +64,19 @@ async function recoverProcessingWaitlist() {
       }
     } finally {
       await redisClient.lRem(WAITLIST_PROCESSING, 1, raw);
+    }
+  }
+}
+
+async function recoverProcessingJobs() {
+  for (const [processingKey, queueKey] of [
+    [NOTIFICATION_PROCESSING, NOTIFICATION_QUEUE],
+    [PROMOTION_PROCESSING, PROMOTION_QUEUE],
+  ]) {
+    const stuckJobs = await redisClient.lRange(processingKey, 0, -1);
+    for (const raw of stuckJobs) {
+      await redisClient.lRem(processingKey, 1, raw);
+      await redisClient.rPush(queueKey, raw);
     }
   }
 }
@@ -127,6 +142,10 @@ async function processPromotion(raw) {
     });
     return;
   }
+  if (await appointments.isDoctorSlotBooked(job.doctorId, freedSlotDateTime)) {
+    await retryWaitlistEntry(entry, reserved.raw, reserved.queueKey, 'freed slot is no longer available');
+    return;
+  }
   const appointmentRef = `MB${randomBytes(8).toString('hex').toUpperCase()}`;
   try {
     const result = await createBooking({
@@ -157,6 +176,7 @@ async function processPromotion(raw) {
 async function main() {
   await connectRedis();
   await recoverProcessingWaitlist();
+  await recoverProcessingJobs();
   console.log('MediBook worker is running.');
   let stopping = false;
   const stop = async () => { stopping = true; };
@@ -165,14 +185,28 @@ async function main() {
 
   while (!stopping) {
     try {
-      const notification = await redisClient.rPop(NOTIFICATION_QUEUE);
+      const notification = await redisClient.rPopLPush(NOTIFICATION_QUEUE, NOTIFICATION_PROCESSING);
       if (notification) {
-        await processNotification(notification);
+        try {
+          await processNotification(notification);
+          await redisClient.lRem(NOTIFICATION_PROCESSING, 1, notification);
+        } catch (error) {
+          await redisClient.lRem(NOTIFICATION_PROCESSING, 1, notification);
+          await redisClient.rPush(NOTIFICATION_QUEUE, notification);
+          throw error;
+        }
         continue;
       }
-      const promotion = await redisClient.rPop(PROMOTION_QUEUE);
+      const promotion = await redisClient.rPopLPush(PROMOTION_QUEUE, PROMOTION_PROCESSING);
       if (promotion) {
-        await processPromotion(promotion);
+        try {
+          await processPromotion(promotion);
+          await redisClient.lRem(PROMOTION_PROCESSING, 1, promotion);
+        } catch (error) {
+          await redisClient.lRem(PROMOTION_PROCESSING, 1, promotion);
+          await redisClient.rPush(PROMOTION_QUEUE, promotion);
+          throw error;
+        }
         continue;
       }
       await sleep(500);
