@@ -50,10 +50,10 @@ CREATE TABLE IF NOT EXISTS appointments (
     UNIQUE (active_doctor_id, appointment_datetime),
   CONSTRAINT fk_appointments_patient
     FOREIGN KEY (patient_id) REFERENCES patients (patient_id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_appointments_doctor
     FOREIGN KEY (doctor_id) REFERENCES doctors (doctor_id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT chk_appointments_slot CHECK (
     TIME(appointment_datetime) >= '09:00:00'
     AND TIME(appointment_datetime) < '17:00:00'

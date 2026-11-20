@@ -60,7 +60,7 @@
     <line x1="632" y1="558" x2="1250" y2="558" stroke="#d9e2ec" stroke-width="2"/>
     <text class="notehead" x="632" y="590">Keys and constraints</text>
     <text class="notetext" x="632" y="619">PK: appointment_id • UQ: appointment_ref</text>
-    <text class="notetext" x="632" y="646">FKs: patient_id and doctor_id; delete is RESTRICT</text>
+    <text class="notetext" x="632" y="646">FKs: patient_id and doctor_id; update/delete RESTRICT</text>
     <text class="notetext" x="632" y="673">UQ(active_doctor_id, appointment_datetime): one active</text>
     <text class="notetext" x="632" y="696">appointment per doctor slot; cancelled rows have NULL key</text>
     <text class="notetext" x="632" y="731">CK: time is 09:00–16:30 on :00 or :30, zero seconds</text>
