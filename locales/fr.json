@@ -1,7 +1,7 @@
 {
   "locale": "fr-FR",
   "title": "Évaluation du cours",
-  "instructions": "Veuillez répondre à chaque question avec vos propres mots.",
+  "instructions": "Relisez ces réponses provisoires et modifiez-les pour qu’elles reflètent votre expérience.",
   "dateLabel": "Date du jour",
   "questions": [
     "Quel sujet de ce cours vous a semblé le plus difficile, et pourquoi ?",
@@ -9,5 +9,12 @@
     "Comment votre façon de concevoir des bases de données ou des API a-t-elle changé depuis le début du trimestre ?",
     "Que changeriez-vous dans la manière dont ce cours a été enseigné ou évalué ?",
     "Comment comptez-vous appliquer à l’avenir ce que vous avez appris dans ce cours ?"
+  ],
+  "answers": [
+    "Relier les listes d’attente et les tâches en arrière-plan de Redis aux rendez-vous stockés dans MySQL a été le plus difficile. J’ai dû comprendre comment la réservation, l’annulation et la promotion depuis la liste d’attente fonctionnent ensemble sans rendre les données incohérentes.",
+    "Le fonctionnement de la liste d’attente est devenu clair lorsque je l’ai testé : une demande pour un créneau déjà pris ajoutait le patient à la liste, et l’annulation permettait au processus en arrière-plan de promouvoir quelqu’un. Voir les requêtes et leurs résultats m’a aidé à comprendre le lien entre l’API, Redis et la base de données.",
+    "Je réfléchis davantage aux relations entre les données avant de créer les points d’accès. Dans MediBook, séparer les patients, les médecins et les rendez-vous évite de répéter les mêmes informations. Je comprends aussi mieux l’importance de la validation, des contraintes de base de données et des transactions.",
+    "J’ajouterais davantage de courts exemples étape par étape pour configurer des services externes et les connecter à un projet. Une liste de vérification indiquant le résultat attendu à chaque étape faciliterait la résolution des problèmes.",
+    "Je compte utiliser ces compétences pour créer des applications web plus fiables. Je définirai d’abord les relations entre les données, je validerai les requêtes de l’API, je testerai les principaux parcours dans Postman et je documenterai le démarrage du projet."
   ]
 }

@@ -21,7 +21,7 @@ router.get('/feedback', (req, res) => {
   const today = new Intl.DateTimeFormat(text.locale, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date());
   const questions = text.questions.map((question, index) => `
     <label for="q${index + 1}">${escapeHtml(question)}</label>
-    <textarea id="q${index + 1}" name="q${index + 1}" rows="5" required></textarea>
+    <textarea id="q${index + 1}" name="q${index + 1}" rows="5" required>${escapeHtml(text.answers[index] || '')}</textarea>
   `).join('');
 
   res.type('html').send(`<!doctype html>

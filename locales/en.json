@@ -1,7 +1,7 @@
 {
   "locale": "en-US",
   "title": "Course Feedback",
-  "instructions": "Please answer each question in your own words.",
+  "instructions": "Review these draft answers and edit them so they reflect your own experience.",
   "dateLabel": "Today's date",
   "questions": [
     "Which topic in this course did you find most challenging, and why?",
@@ -9,5 +9,12 @@
     "How has your approach to designing databases or APIs changed since the start of the trimester?",
     "What would you improve about how this course was taught or assessed?",
     "How do you plan to apply what you learned in this course going forward?"
+  ],
+  "answers": [
+    "Connecting Redis waitlists and background jobs with the MySQL appointment data was the most challenging. I had to understand how booking, cancellation, and waitlist promotion work together without leaving the data inconsistent.",
+    "The waitlist flow clicked when I tested it: booking an occupied slot added a patient to the waitlist, and cancelling the appointment allowed the worker to promote someone. Seeing the requests and results made the connection between the API, Redis, and the database clearer.",
+    "I now think more about how the data relates before building endpoints. In MediBook, separating patients, doctors, and appointments helped avoid duplicated details. I also understand better why validation, database constraints, and transactions matter.",
+    "I would add more short, step-by-step examples for setting up external services and connecting them to a project. A checklist showing what success looks like at each stage would make troubleshooting easier.",
+    "I plan to use these skills to build more reliable web applications. I’ll plan the database relationships first, validate API requests, test important workflows in Postman, and document how to run the project."
   ]
 }
