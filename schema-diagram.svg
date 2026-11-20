@@ -1,84 +1,106 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1220" viewBox="0 0 1320 1220" role="img" aria-labelledby="title desc">
-  <title id="title">MediBook normalized database schema</title>
-  <desc id="desc">Three-table schema for patients, doctors, and appointments, with primary keys, foreign keys, constraints, and one-to-many relationships.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title description">
+  <title id="title">MediBook database schema</title>
+  <desc id="description">Entity relationship diagram for the patients, doctors, and appointments tables. Patients and doctors each have a one-to-many relationship with appointments.</desc>
   <defs>
     <style>
-      .bg{fill:#f5f7fb}.card{fill:#fff;stroke:#cbd5e1;stroke-width:2}.head{fill:#16324f}.appt{fill:#175b58}.title{font:700 25px Arial,sans-serif;fill:#fff}.subtitle{font:14px Arial,sans-serif;fill:#dbeafe}.row{font:13px 'Courier New',monospace;fill:#172b4d}.small{font:14px Arial,sans-serif;fill:#26364b}.notehead{font:700 16px Arial,sans-serif;fill:#16324f}.notetext{font:14px Arial,sans-serif;fill:#26364b}.line{fill:none;stroke:#486581;stroke-width:3}.label{font:700 13px Arial,sans-serif;fill:#334e68}.tag{font:700 12px Arial,sans-serif;fill:#175b58}
+      .page{fill:#f5f7fa}.card{fill:#fff;stroke:#d6dee7;stroke-width:2}.header{fill:#2f668d}.header-text{font:700 24px Arial,sans-serif;fill:#fff}.subhead{font:14px Arial,sans-serif;fill:#dceaf4}.body{font:16px Arial,sans-serif;fill:#263746}.muted{font:14px Arial,sans-serif;fill:#607080}.field{font:15px 'Courier New',monospace;fill:#243746}.type{font:14px 'Courier New',monospace;fill:#526578}.rule{font:700 12px Arial,sans-serif;fill:#fff}.rule-bg{fill:#496779}.rule-key{fill:#26714f}.rule-check{fill:#8a6821}.divider{stroke:#e7ecf0;stroke-width:1}.edge{fill:none;stroke:#8498a8;stroke-width:2.5}.edge-label{font:700 14px Arial,sans-serif;fill:#536979}.note-title{font:700 18px Arial,sans-serif;fill:#203c50}.note{font:15px Arial,sans-serif;fill:#344b5d}.small{font:13px Arial,sans-serif;fill:#617487}
     </style>
   </defs>
-  <rect class="bg" width="1320" height="1220"/>
-  <text x="40" y="48" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#102a43">MediBook — Part A: normalized database schema</text>
-  <text x="40" y="76" class="small">Exactly three entities • MySQL types • primary/foreign keys • business constraints shown</text>
+  <rect class="page" width="1600" height="1120"/>
+  <text x="70" y="58" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#183b53">MediBook — database schema</text>
+  <text x="70" y="88" class="muted">Three normalized tables · MySQL 8 · primary keys, foreign keys, and booking rules</text>
 
-  <!-- Relationships sit behind the table cards. -->
-  <path class="line" d="M510 300 H560 V375 H610"/><path class="line" d="M510 690 H560 V455 H610"/>
+  <!-- Relationships are drawn behind the table cards. -->
+  <path class="edge" d="M630 258 H735 V330 H850"/>
+  <path class="edge" d="M630 650 H765 V368 H850"/>
+  <text x="648" y="247" class="edge-label">1</text>
+  <text x="804" y="320" class="edge-label">0..N</text>
+  <text x="648" y="638" class="edge-label">1</text>
+  <text x="804" y="358" class="edge-label">0..N</text>
 
+  <!-- patients -->
   <g>
-    <rect class="card" x="40" y="125" width="470" height="300" rx="12"/>
-    <path class="head" d="M52 125h446a12 12 0 0 1 12 12v48H40v-48a12 12 0 0 1 12-12z"/>
-    <text class="title" x="62" y="160">patients</text><text class="subtitle" x="62" y="179">People who book clinic appointments</text>
-    <text class="row" x="62" y="215">patient_id       BIGINT UNSIGNED  PK, AI, NOT NULL</text>
-    <text class="row" x="62" y="244">full_name        VARCHAR(120)     NOT NULL</text>
-    <text class="row" x="62" y="273">email            VARCHAR(255)     NOT NULL, UNIQUE</text>
-    <text class="row" x="62" y="302">phone            VARCHAR(30)      NOT NULL</text>
-    <text class="row" x="62" y="331">created_at       TIMESTAMP        NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
-    <text class="tag" x="62" y="389">UQ: email</text>
+    <rect class="card" x="70" y="155" width="560" height="315" rx="10"/>
+    <path class="header" d="M80 155h540a10 10 0 0 1 10 10v54H70v-54a10 10 0 0 1 10-10z"/>
+    <text x="94" y="190" class="header-text">patients</text>
+    <text x="94" y="211" class="subhead">People who book clinic appointments</text>
+    <text x="94" y="258" class="field">patient_id</text><text x="292" y="258" class="type">BIGINT UNSIGNED</text><rect x="493" y="241" width="34" height="22" rx="4" class="rule-key"/><text x="501" y="257" class="rule">PK</text><rect x="533" y="241" width="32" height="22" rx="4" class="rule-bg"/><text x="540" y="257" class="rule">AI</text><rect x="571" y="241" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="257" class="rule">NN</text>
+    <line x1="90" y1="274" x2="610" y2="274" class="divider"/>
+    <text x="94" y="300" class="field">full_name</text><text x="292" y="300" class="type">VARCHAR(120)</text><rect x="571" y="283" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="299" class="rule">NN</text>
+    <line x1="90" y1="316" x2="610" y2="316" class="divider"/>
+    <text x="94" y="342" class="field">email</text><text x="292" y="342" class="type">VARCHAR(255)</text><rect x="493" y="325" width="34" height="22" rx="4" class="rule-key"/><text x="501" y="341" class="rule">UQ</text><rect x="571" y="325" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="341" class="rule">NN</text>
+    <line x1="90" y1="358" x2="610" y2="358" class="divider"/>
+    <text x="94" y="384" class="field">phone</text><text x="292" y="384" class="type">VARCHAR(30)</text><rect x="571" y="367" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="383" class="rule">NN</text>
+    <line x1="90" y1="400" x2="610" y2="400" class="divider"/>
+    <text x="94" y="426" class="field">created_at</text><text x="292" y="426" class="type">TIMESTAMP</text><rect x="571" y="409" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="425" class="rule">NN</text>
+    <text x="94" y="453" class="small">DEFAULT CURRENT_TIMESTAMP</text>
   </g>
 
+  <!-- doctors -->
   <g>
-    <rect class="card" x="40" y="545" width="470" height="330" rx="12"/>
-    <path class="head" d="M52 545h446a12 12 0 0 1 12 12v48H40v-48a12 12 0 0 1 12-12z"/>
-    <text class="title" x="62" y="580">doctors</text><text class="subtitle" x="62" y="599">Clinic doctors and their consultation details</text>
-    <text class="row" x="62" y="635">doctor_id        BIGINT UNSIGNED  PK, AI, NOT NULL</text>
-    <text class="row" x="62" y="664">full_name        VARCHAR(120)     NOT NULL</text>
-    <text class="row" x="62" y="693">specialty        VARCHAR(100)     NOT NULL</text>
-    <text class="row" x="62" y="722">consultation_fee DECIMAL(10,2)    NOT NULL</text>
-    <text class="row" x="62" y="751">room             VARCHAR(30)      NOT NULL</text>
-    <text class="row" x="62" y="780">created_at       TIMESTAMP        NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
-    <text class="tag" x="62" y="839">CK: consultation_fee &gt;= 0</text>
+    <rect class="card" x="70" y="550" width="560" height="340" rx="10"/>
+    <path class="header" d="M80 550h540a10 10 0 0 1 10 10v54H70v-54a10 10 0 0 1 10-10z"/>
+    <text x="94" y="585" class="header-text">doctors</text>
+    <text x="94" y="606" class="subhead">Doctors and their consultation details</text>
+    <text x="94" y="650" class="field">doctor_id</text><text x="292" y="650" class="type">BIGINT UNSIGNED</text><rect x="493" y="633" width="34" height="22" rx="4" class="rule-key"/><text x="501" y="649" class="rule">PK</text><rect x="533" y="633" width="32" height="22" rx="4" class="rule-bg"/><text x="540" y="649" class="rule">AI</text><rect x="571" y="633" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="649" class="rule">NN</text>
+    <line x1="90" y1="666" x2="610" y2="666" class="divider"/>
+    <text x="94" y="692" class="field">full_name</text><text x="292" y="692" class="type">VARCHAR(120)</text><rect x="571" y="675" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="691" class="rule">NN</text>
+    <line x1="90" y1="708" x2="610" y2="708" class="divider"/>
+    <text x="94" y="734" class="field">specialty</text><text x="292" y="734" class="type">VARCHAR(100)</text><rect x="571" y="717" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="733" class="rule">NN</text>
+    <line x1="90" y1="750" x2="610" y2="750" class="divider"/>
+    <text x="94" y="776" class="field">consultation_fee</text><text x="292" y="776" class="type">DECIMAL(10,2)</text><rect x="493" y="759" width="34" height="22" rx="4" class="rule-check"/><text x="501" y="775" class="rule">CK</text><rect x="571" y="759" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="775" class="rule">NN</text>
+    <line x1="90" y1="792" x2="610" y2="792" class="divider"/>
+    <text x="94" y="818" class="field">room</text><text x="292" y="818" class="type">VARCHAR(30)</text><rect x="571" y="801" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="817" class="rule">NN</text>
+    <line x1="90" y1="834" x2="610" y2="834" class="divider"/>
+    <text x="94" y="860" class="field">created_at</text><text x="292" y="860" class="type">TIMESTAMP</text><rect x="571" y="843" width="34" height="22" rx="4" class="rule-bg"/><text x="579" y="859" class="rule">NN</text>
+    <text x="94" y="883" class="small">CHECK consultation_fee &gt;= 0 · DEFAULT CURRENT_TIMESTAMP</text>
   </g>
 
-  <text x="516" y="293" class="label">1</text><text x="591" y="370" class="label">N</text>
-  <text x="516" y="683" class="label">1</text><text x="591" y="450" class="label">N</text>
-
+  <!-- appointments -->
   <g>
-    <rect class="card" x="610" y="125" width="670" height="835" rx="12"/>
-    <path class="appt" d="M622 125h646a12 12 0 0 1 12 12v48H610v-48a12 12 0 0 1 12-12z"/>
-    <text class="title" x="632" y="160">appointments</text><text class="subtitle" x="632" y="179">Booking plus retained cancellation and refund history</text>
-    <text class="row" x="632" y="215">appointment_id     BIGINT UNSIGNED  PK, AI, NOT NULL</text>
-    <text class="row" x="632" y="244">appointment_ref    VARCHAR(20)      NOT NULL, UNIQUE</text>
-    <text class="row" x="632" y="273">patient_id         BIGINT UNSIGNED  FK -&gt; patients.patient_id, NOT NULL</text>
-    <text class="row" x="632" y="302">doctor_id          BIGINT UNSIGNED  FK -&gt; doctors.doctor_id, NOT NULL</text>
-    <text class="row" x="632" y="331">appointment_datetime DATETIME       NOT NULL</text>
-    <text class="row" x="632" y="360">booked_at          DATETIME         NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
-    <text class="row" x="632" y="389">amount_paid        DECIMAL(10,2)    NOT NULL, CHECK (&gt;= 0)</text>
-    <text class="row" x="632" y="418">status             ENUM(confirmed,cancelled) NOT NULL, DEFAULT confirmed</text>
-    <text class="row" x="632" y="447">cancelled_at       DATETIME         NULL</text>
-    <text class="row" x="632" y="476">refund_amount      DECIMAL(10,2)    NOT NULL, DEFAULT 0, CHECK (&gt;= 0)</text>
-    <text class="row" x="632" y="505">active_doctor_id   BIGINT UNSIGNED GENERATED, NULLABLE</text>
-    <text class="row" x="632" y="534">  = doctor_id when confirmed; NULL when cancelled</text>
-    <line x1="632" y1="558" x2="1250" y2="558" stroke="#d9e2ec" stroke-width="2"/>
-    <text class="notehead" x="632" y="590">Keys and constraints</text>
-    <text class="notetext" x="632" y="619">PK: appointment_id • UQ: appointment_ref</text>
-    <text class="notetext" x="632" y="646">FKs: patient_id and doctor_id; update/delete RESTRICT</text>
-    <text class="notetext" x="632" y="673">UQ(active_doctor_id, appointment_datetime): one active</text>
-    <text class="notetext" x="632" y="696">appointment per doctor slot; cancelled rows have NULL key</text>
-    <text class="notetext" x="632" y="731">CK: time is 09:00–16:30 on :00 or :30, zero seconds</text>
-    <text class="notetext" x="632" y="758">CK: confirmed =&gt; cancelled_at IS NULL and refund_amount = 0</text>
-    <text class="notetext" x="632" y="785">CK: cancelled =&gt; cancelled_at IS NOT NULL</text>
-    <text class="notetext" x="632" y="812">CK: 0 &lt;= refund_amount &lt;= amount_paid</text>
-    <text class="notetext" x="632" y="850">Refund history stays on the cancelled appointment row.</text>
-    <text class="notetext" x="632" y="877">Cancelled rows do not participate in the active-slot key.</text>
+    <rect class="card" x="850" y="155" width="680" height="735" rx="10"/>
+    <path class="header" d="M860 155h660a10 10 0 0 1 10 10v54H850v-54a10 10 0 0 1 10-10z"/>
+    <text x="874" y="190" class="header-text">appointments</text>
+    <text x="874" y="211" class="subhead">Bookings and retained cancellation/refund history</text>
+    <text x="874" y="254" class="field">appointment_id</text><text x="1092" y="254" class="type">BIGINT UNSIGNED</text><rect x="1390" y="237" width="34" height="22" rx="4" class="rule-key"/><text x="1398" y="253" class="rule">PK</text><rect x="1430" y="237" width="32" height="22" rx="4" class="rule-bg"/><text x="1437" y="253" class="rule">AI</text><rect x="1468" y="237" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="253" class="rule">NN</text>
+    <line x1="870" y1="270" x2="1510" y2="270" class="divider"/>
+    <text x="874" y="292" class="field">appointment_ref</text><text x="1092" y="292" class="type">VARCHAR(20)</text><rect x="1390" y="275" width="34" height="22" rx="4" class="rule-key"/><text x="1398" y="291" class="rule">UQ</text><rect x="1468" y="275" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="291" class="rule">NN</text>
+    <line x1="870" y1="308" x2="1510" y2="308" class="divider"/>
+    <text x="874" y="330" class="field">patient_id</text><text x="1092" y="330" class="type">BIGINT UNSIGNED</text><rect x="1390" y="313" width="34" height="22" rx="4" class="rule-key"/><text x="1398" y="329" class="rule">FK</text><rect x="1468" y="313" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="329" class="rule">NN</text>
+    <line x1="870" y1="346" x2="1510" y2="346" class="divider"/>
+    <text x="874" y="368" class="field">doctor_id</text><text x="1092" y="368" class="type">BIGINT UNSIGNED</text><rect x="1390" y="351" width="34" height="22" rx="4" class="rule-key"/><text x="1398" y="367" class="rule">FK</text><rect x="1468" y="351" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="367" class="rule">NN</text>
+    <line x1="870" y1="384" x2="1510" y2="384" class="divider"/>
+    <text x="874" y="406" class="field">appointment_datetime</text><text x="1092" y="406" class="type">DATETIME</text><rect x="1468" y="389" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="405" class="rule">NN</text>
+    <line x1="870" y1="422" x2="1510" y2="422" class="divider"/>
+    <text x="874" y="444" class="field">booked_at</text><text x="1092" y="444" class="type">DATETIME</text><rect x="1468" y="427" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="443" class="rule">NN</text><text x="1200" y="444" class="small">DEFAULT CURRENT_TIMESTAMP</text>
+    <line x1="870" y1="460" x2="1510" y2="460" class="divider"/>
+    <text x="874" y="482" class="field">amount_paid</text><text x="1092" y="482" class="type">DECIMAL(10,2)</text><rect x="1390" y="465" width="34" height="22" rx="4" class="rule-check"/><text x="1398" y="481" class="rule">CK</text><rect x="1468" y="465" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="481" class="rule">NN</text>
+    <line x1="870" y1="498" x2="1510" y2="498" class="divider"/>
+    <text x="874" y="520" class="field">status</text><text x="1092" y="520" class="type">ENUM(confirmed,cancelled)</text><rect x="1468" y="503" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="519" class="rule">NN</text>
+    <line x1="870" y1="536" x2="1510" y2="536" class="divider"/>
+    <text x="874" y="558" class="field">cancelled_at</text><text x="1092" y="558" class="type">DATETIME NULL</text>
+    <line x1="870" y1="574" x2="1510" y2="574" class="divider"/>
+    <text x="874" y="596" class="field">refund_amount</text><text x="1092" y="596" class="type">DECIMAL(10,2)</text><rect x="1390" y="579" width="34" height="22" rx="4" class="rule-check"/><text x="1398" y="595" class="rule">CK</text><rect x="1468" y="579" width="34" height="22" rx="4" class="rule-bg"/><text x="1476" y="595" class="rule">NN</text>
+    <line x1="870" y1="612" x2="1510" y2="612" class="divider"/>
+    <text x="874" y="634" class="field">active_doctor_id</text><text x="1092" y="634" class="type">BIGINT UNSIGNED</text><rect x="1390" y="617" width="92" height="22" rx="4" class="rule-bg"/><text x="1398" y="633" class="rule">GENERATED</text>
+    <text x="874" y="669" class="small">GENERATED STORED · NULLABLE · doctor_id while confirmed; NULL after cancellation</text>
+    <line x1="870" y1="688" x2="1510" y2="688" class="divider"/>
+    <text x="874" y="718" class="note-title">Appointment constraints</text>
+    <text x="874" y="747" class="note">UNIQUE(appointment_ref)</text>
+    <text x="874" y="773" class="note">UNIQUE(active_doctor_id, appointment_datetime) prevents duplicate active slots.</text>
+    <text x="874" y="799" class="note">Foreign keys to patients and doctors use ON UPDATE/DELETE RESTRICT.</text>
+    <text x="874" y="825" class="note">CHECK: 09:00–16:30, :00 or :30, with zero seconds.</text>
+    <text x="874" y="851" class="note">CHECK: amount_paid &gt;= 0; 0 &lt;= refund_amount &lt;= amount_paid.</text>
+    <text x="874" y="876" class="small">CHECK: confirmed rows have no cancellation/refund; cancelled rows retain cancellation time.</text>
   </g>
 
+  <!-- Assignment rules that span more than one table. -->
   <g>
-    <rect x="40" y="920" width="1240" height="250" rx="12" fill="#e8f1f8" stroke="#bcccdc" stroke-width="2"/>
-    <text class="notehead" x="65" y="955">Where each rule is enforced</text>
-    <text class="notetext" x="65" y="985">Database: NOT NULL / UNIQUE / CHECK constraints and foreign keys protect stored data.</text>
-    <text class="notetext" x="65" y="1014">Database concurrency: the active-slot unique key prevents two simultaneous bookings for the same doctor and time.</text>
-    <text class="notetext" x="65" y="1043">Transactional application logic: lock the doctor row while counting that day's active appointments; reject booking number 13.</text>
-    <text class="notetext" x="65" y="1072">Application validation: booking must be in the future. A CHECK constraint cannot safely compare with the moving current time.</text>
-    <text class="notetext" x="65" y="1101">Appointment status has only confirmed/cancelled; waitlist and notification queues live in Redis, not extra database entities.</text>
-    <text class="notetext" x="65" y="1130">Relationships: patients 1:N appointments • doctors 1:N appointments • every appointment has exactly one patient and one doctor.</text>
+    <rect x="70" y="935" width="1460" height="170" rx="10" fill="#eaf0f5" stroke="#d0dce6" stroke-width="2"/>
+    <text x="94" y="970" class="note-title">Where the remaining booking rules are enforced</text>
+    <text x="94" y="1002" class="note">A transaction locks the doctor row before counting confirmed appointments, keeping each doctor to 12 appointments per day.</text>
+    <text x="94" y="1031" class="note">The API accepts only future appointment times. Defaults: status confirmed, refund 0, and timestamps set automatically.</text>
+    <text x="94" y="1057" class="small">Redis holds waitlists and notification jobs outside MySQL. Cancelled rows retain refund history and free the slot.</text>
+    <text x="94" y="1083" class="small">Patients 1 → many appointments · Doctors 1 → many appointments · Each appointment belongs to one patient and one doctor.</text>
   </g>
 </svg>

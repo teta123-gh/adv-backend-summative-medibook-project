@@ -5,6 +5,8 @@
 **Mode:** Individual project
 **Stack (mandatory):** Node.js, Express.js, MySQL (with parameterized queries only), Redis
 
+The visual schema diagram is `schema-diagram.png`; `schema-diagram.svg` is its editable source.
+
 ---
 
 ## Scenario — "MediBook" Clinic Appointment System
@@ -143,6 +145,10 @@ Create a **simple HTML page** (served by your Express app at `GET /feedback`) co
   ```
 
 The API listens on `http://localhost:3000` by default. `GET /health` checks that it responds. `.env.example` lists `PORT`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, and `REDIS_URL`.
+
+### Postman demo
+
+Import `postman/MediBook Backend Demo.postman_collection.json` into Postman. Start with the read-only checks, then run the numbered booking, waitlist, and refund requests in order. The second group creates demo appointment and waitlist records; Redis and the separate worker must be running to show promotion.
 
 ### API routes
 

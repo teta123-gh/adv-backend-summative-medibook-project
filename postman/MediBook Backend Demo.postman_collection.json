@@ -1,0 +1,91 @@
+{
+  "info": {
+    "_postman_id": "563f6ab1-cf99-4a04-9d3a-8c2730e08f42",
+    "name": "MediBook Backend Demo",
+    "description": "Import this collection into Postman to check the MediBook API. The base URL is set to http://localhost:3000. Read-only checks are separate from the booking flow, which creates and cancels demo appointment records.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "patientId", "value": "1" },
+    { "key": "doctorId", "value": "3" },
+    { "key": "appointmentId", "value": "" },
+    { "key": "appointmentDatetime", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Read-only demo checks",
+      "item": [
+        {
+          "name": "Health — GET /health",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('API is healthy (200)', () => pm.response.to.have.status(200));", "pm.test('Service identifies as MediBook', () => pm.expect(pm.response.json().service).to.eql('medibook-api'));" ] } }]
+        },
+        {
+          "name": "List patients — GET /api/patients",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/patients" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Patient list loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response contains a patients array', () => pm.expect(pm.response.json().patients).to.be.an('array'));" ] } }]
+        },
+        {
+          "name": "List doctors — GET /api/doctors",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/doctors" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Doctor list loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response contains a doctors array', () => pm.expect(pm.response.json().doctors).to.be.an('array'));" ] } }]
+        },
+        {
+          "name": "Doctor statistics — GET /api/doctors/:id/stats",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/doctors/{{doctorId}}/stats" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Doctor statistics load (200)', () => pm.response.to.have.status(200));", "pm.test('Statistics include daily counts', () => pm.expect(pm.response.json().statistics.appointments_per_day).to.be.an('array'));" ] } }]
+        },
+        {
+          "name": "All-doctors report — GET /api/doctors/reports",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/doctors/reports" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Doctors report loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response contains a doctors array', () => pm.expect(pm.response.json().doctors).to.be.an('array'));" ] } }]
+        },
+        {
+          "name": "Busy-days report — GET /api/doctors/reports/busy-days",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/doctors/reports/busy-days" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Busy-days report loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response contains a busyDays array', () => pm.expect(pm.response.json().busyDays).to.be.an('array'));" ] } }]
+        },
+        {
+          "name": "Feedback page — GET /feedback?lang=en",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/feedback?lang=en" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('English feedback page loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response is HTML', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'));" ] } }]
+        },
+        {
+          "name": "Feedback page — GET /feedback?lang=fr",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/feedback?lang=fr" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('French feedback page loads (200)', () => pm.response.to.have.status(200));", "pm.test('Response is HTML', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'));" ] } }]
+        }
+      ]
+    },
+    {
+      "name": "2. Booking, waitlist, and refund demo (writes demo records)",
+      "description": "Run in order. A booking and waitlist entry are created; cancellation writes the refund record. Redis must be configured, and the worker should be running to demonstrate waitlist promotion.",
+      "item": [
+        {
+          "name": "1 — Book a demo appointment",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": ["const day = new Date();", "day.setUTCDate(day.getUTCDate() + 7 + Math.floor(Math.random() * 20));", "day.setUTCHours(10, 0, 0, 0);", "pm.collectionVariables.set('appointmentDatetime', day.toISOString().replace('.000Z', 'Z'));", "pm.collectionVariables.unset('appointmentId');"] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Booking succeeds (201)', () => pm.response.to.have.status(201));", "const data = pm.response.json();", "if (data.appointment && data.appointment.appointment_id) pm.collectionVariables.set('appointmentId', String(data.appointment.appointment_id));", "pm.test('Appointment ID saved for the next requests', () => pm.expect(pm.collectionVariables.get('appointmentId')).to.be.ok);" ] } }
+          ],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"patientId\": {{patientId}},\n  \"doctorId\": {{doctorId}},\n  \"appointmentDatetime\": \"{{appointmentDatetime}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/appointments" }
+        },
+        {
+          "name": "2 — Request the same slot (waitlist)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Duplicate slot joins waitlist (202)', () => pm.response.to.have.status(202));", "pm.test('Waitlist position is returned', () => pm.expect(pm.response.json().position).to.be.a('number'));" ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"patientId\": {{patientId}},\n  \"doctorId\": {{doctorId}},\n  \"appointmentDatetime\": \"{{appointmentDatetime}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/appointments" }
+        },
+        {
+          "name": "3 — Read the appointment — GET /api/appointments/:id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/appointments/{{appointmentId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Appointment loads (200)', () => pm.response.to.have.status(200));", "pm.test('Appointment is confirmed', () => pm.expect(pm.response.json().appointment.status).to.eql('confirmed'));" ] } }]
+        },
+        {
+          "name": "4 — Cancel and calculate refund — POST /api/appointments/:id/cancel",
+          "request": { "method": "POST", "header": [], "url": "{{baseUrl}}/api/appointments/{{appointmentId}}/cancel" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Cancellation and refund are returned (200)', () => pm.response.to.have.status(200));", "pm.test('Appointment is marked cancelled', () => pm.expect(pm.response.json().status).to.eql('cancelled'));", "pm.test('Refund amount is returned', () => pm.expect(pm.response.json().refundAmount).to.be.a('number'));" ] } }]
+        }
+      ]
+    }
+  ]
+}
