@@ -52,7 +52,9 @@ function validateDoctor(body, { partial = false } = {}) {
     }
   }
   if (body.consultationFee !== undefined
-    && (!Number.isFinite(Number(body.consultationFee)) || Number(body.consultationFee) < 0)) {
+    && (typeof body.consultationFee !== 'number'
+      || !Number.isFinite(body.consultationFee)
+      || body.consultationFee < 0)) {
     throw new AppError('consultationFee must be a non-negative number.', 400);
   }
 }

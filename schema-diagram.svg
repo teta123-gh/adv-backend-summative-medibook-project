@@ -3,7 +3,7 @@
   <desc id="desc">Three-table schema for patients, doctors, and appointments, with primary keys, foreign keys, constraints, and one-to-many relationships.</desc>
   <defs>
     <style>
-      .bg{fill:#f5f7fb}.card{fill:#fff;stroke:#cbd5e1;stroke-width:2}.head{fill:#16324f}.appt{fill:#175b58}.title{font:700 25px Arial,sans-serif;fill:#fff}.subtitle{font:14px Arial,sans-serif;fill:#dbeafe}.row{font:15px 'Courier New',monospace;fill:#172b4d}.small{font:14px Arial,sans-serif;fill:#26364b}.notehead{font:700 16px Arial,sans-serif;fill:#16324f}.notetext{font:14px Arial,sans-serif;fill:#26364b}.line{fill:none;stroke:#486581;stroke-width:3}.label{font:700 13px Arial,sans-serif;fill:#334e68}.tag{font:700 12px Arial,sans-serif;fill:#175b58}
+      .bg{fill:#f5f7fb}.card{fill:#fff;stroke:#cbd5e1;stroke-width:2}.head{fill:#16324f}.appt{fill:#175b58}.title{font:700 25px Arial,sans-serif;fill:#fff}.subtitle{font:14px Arial,sans-serif;fill:#dbeafe}.row{font:13px 'Courier New',monospace;fill:#172b4d}.small{font:14px Arial,sans-serif;fill:#26364b}.notehead{font:700 16px Arial,sans-serif;fill:#16324f}.notetext{font:14px Arial,sans-serif;fill:#26364b}.line{fill:none;stroke:#486581;stroke-width:3}.label{font:700 13px Arial,sans-serif;fill:#334e68}.tag{font:700 12px Arial,sans-serif;fill:#175b58}
     </style>
   </defs>
   <rect class="bg" width="1320" height="1220"/>
@@ -12,8 +12,6 @@
 
   <!-- Relationships sit behind the table cards. -->
   <path class="line" d="M510 300 H560 V375 H610"/><path class="line" d="M510 690 H560 V455 H610"/>
-  <text x="526" y="286" class="label">1 patient : many appointments</text>
-  <text x="526" y="710" class="label">1 doctor : many appointments</text>
 
   <g>
     <rect class="card" x="40" y="125" width="470" height="300" rx="12"/>
@@ -34,11 +32,14 @@
     <text class="row" x="62" y="635">doctor_id        BIGINT UNSIGNED  PK, AI, NOT NULL</text>
     <text class="row" x="62" y="664">full_name        VARCHAR(120)     NOT NULL</text>
     <text class="row" x="62" y="693">specialty        VARCHAR(100)     NOT NULL</text>
-    <text class="row" x="62" y="722">consultation_fee DECIMAL(10,2)    NOT NULL, CHECK (&gt;= 0)</text>
+    <text class="row" x="62" y="722">consultation_fee DECIMAL(10,2)    NOT NULL</text>
     <text class="row" x="62" y="751">room             VARCHAR(30)      NOT NULL</text>
     <text class="row" x="62" y="780">created_at       TIMESTAMP        NOT NULL, DEFAULT CURRENT_TIMESTAMP</text>
     <text class="tag" x="62" y="839">CK: consultation_fee &gt;= 0</text>
   </g>
+
+  <text x="516" y="293" class="label">1</text><text x="591" y="370" class="label">N</text>
+  <text x="516" y="683" class="label">1</text><text x="591" y="450" class="label">N</text>
 
   <g>
     <rect class="card" x="610" y="125" width="670" height="835" rx="12"/>
@@ -63,10 +64,11 @@
     <text class="notetext" x="632" y="673">UQ(active_doctor_id, appointment_datetime): one active</text>
     <text class="notetext" x="632" y="696">appointment per doctor slot; cancelled rows have NULL key</text>
     <text class="notetext" x="632" y="731">CK: time is 09:00–16:30 on :00 or :30, zero seconds</text>
-    <text class="notetext" x="632" y="758">CK: status/cancelled_at consistent; 0 &lt;= refund &lt;= amount_paid</text>
-    <text class="notetext" x="632" y="803">Refund history stays on the cancelled appointment row.</text>
-    <text class="notetext" x="632" y="830">The freed slot can be booked again because cancelled rows</text>
-    <text class="notetext" x="632" y="853">do not participate in the active-slot unique key.</text>
+    <text class="notetext" x="632" y="758">CK: confirmed =&gt; cancelled_at IS NULL and refund_amount = 0</text>
+    <text class="notetext" x="632" y="785">CK: cancelled =&gt; cancelled_at IS NOT NULL</text>
+    <text class="notetext" x="632" y="812">CK: 0 &lt;= refund_amount &lt;= amount_paid</text>
+    <text class="notetext" x="632" y="850">Refund history stays on the cancelled appointment row.</text>
+    <text class="notetext" x="632" y="877">Cancelled rows do not participate in the active-slot key.</text>
   </g>
 
   <g>

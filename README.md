@@ -118,6 +118,72 @@ Create a **simple HTML page** (served by your Express app at `GET /feedback`) co
 
 ---
 
+## MediBook implementation notes
+
+### Requirements and setup
+
+- Node.js 18+, MySQL 8.0.16+, and Redis 6.2+. MySQL 8.0.16 is required for enforced `CHECK` constraints.
+- The assessment does not specify a clinic timezone, so this implementation assumes UTC for appointment timestamps and working hours. API timestamps use `YYYY-MM-DDTHH:mm:ssZ`.
+- Copy `.env.example` to `.env` and fill in the MySQL connection values. Keep `.env` private; it is ignored by Git.
+- Create and seed the database from the repository root:
+
+  ```sh
+  mysql -u root -p < database/schema.sql
+  mysql -u root -p < database/seed.sql
+  ```
+
+  MySQL Workbench can run both scripts as well. The sample data has 11 appointments, 10 for one doctor on one day, and a doctor with no appointments.
+- Install and run the application and worker in separate terminals, then run the pure unit tests:
+
+  ```sh
+  npm install
+  npm start
+  npm run worker
+  npm test
+  ```
+
+The API listens on `http://localhost:3000` by default. `GET /health` checks that it responds. `.env.example` lists `PORT`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, and `REDIS_URL`.
+
+### API routes
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET, POST | `/api/patients` | List or create patients |
+| GET, PUT, PATCH, DELETE | `/api/patients/:id` | Read, update, or delete a patient |
+| GET, POST | `/api/doctors` | List or create doctors |
+| GET, PUT, PATCH, DELETE | `/api/doctors/:id` | Read, update, or delete a doctor |
+| POST | `/api/appointments` | Book a slot or join the waitlist |
+| GET | `/api/appointments/:id` | Read an appointment |
+| POST | `/api/appointments/:id/cancel` | Cancel and calculate the refund |
+| GET | `/api/doctors/:id/stats` | Doctor revenue, upcoming count, daily counts, utilization |
+| GET | `/api/doctors/reports` | All doctors, including those with zero appointments |
+| GET | `/api/doctors/reports/busy-days` | Doctor-days above 80% capacity |
+| GET | `/feedback?lang=en` or `?lang=fr` | Localized course feedback page |
+
+Example booking body:
+
+```json
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentDatetime": "2026-12-01T09:00:00Z"
+}
+```
+
+### Design decisions for the viva
+
+- There are exactly three entities. Patient and doctor details live once in their own tables; appointments hold both foreign keys and booking-specific facts.
+- `amount_paid` is a historical transaction value. It stays fixed if a doctor's current fee changes. SQL reports revenue as `amount_paid - refund_amount`.
+- A generated `active_doctor_id` is the doctor's ID while an appointment is confirmed and `NULL` after cancellation. The unique key on `(active_doctor_id, appointment_datetime)` prevents concurrent duplicate bookings while allowing a cancelled slot to be reused. The cancelled row retains refund history.
+- Booking locks the doctor row in a transaction before counting that day's confirmed appointments. This serializes bookings for one doctor and prevents appointment 13. The database unique key separately prevents two simultaneous requests from taking one slot.
+- Stored slot boundaries and clinic hours are checked in MySQL. The application checks that the requested timestamp is in the future because a `CHECK` constraint cannot safely compare with a changing current time.
+- Refund policy: more than 48 hours receives 100%; from exactly 24 hours through exactly 48 hours receives 50%; less than 24 hours receives 0%. The server calculates the amount; status, cancellation time, refund, and promotion job are handled in the cancellation transaction.
+- Waitlists are FIFO Redis lists (`LPUSH` to add, `RPOP` to take the oldest). The worker moves a candidate to a processing list before booking. Failed promotions return to the queue; processing entries are recovered after worker restarts.
+- Confirmation and promotion jobs are queued before their MySQL transaction commits. The worker checks that the appointment state is committed and retries briefly if it is not visible yet. Redis is required for booking and cancellation operations that enqueue jobs.
+- Audit events are appended asynchronously as JSON lines. Log-write failures are reported to the server log but do not fail a successful request.
+- Doctor statistics, the all-doctors report, and busy days are computed by SQL aggregates in the models. The all-doctors report uses a `LEFT JOIN` so doctors with no appointments are included.
+- Jest tests cover the three refund tiers, the exact 24-hour and 48-hour boundaries, valid 09:00, 09:15, 17:00, malformed date, and past-time cases. They need neither MySQL nor Redis.
+
 ## Submission Requirements
 
 - Git repository (with meaningful commit history — a single "final commit" will be questioned) containing:

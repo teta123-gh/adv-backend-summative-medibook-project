@@ -1,0 +1,13 @@
+{
+  "locale": "fr-FR",
+  "title": "Évaluation du cours",
+  "instructions": "Veuillez répondre à chaque question avec vos propres mots.",
+  "dateLabel": "Date du jour",
+  "questions": [
+    "Quel sujet de ce cours vous a semblé le plus difficile, et pourquoi ?",
+    "Décrivez un concept que vous n’avez compris qu’après les travaux pratiques. Qu’est-ce qui vous a aidé à le comprendre ?",
+    "Comment votre façon de concevoir des bases de données ou des API a-t-elle changé depuis le début du trimestre ?",
+    "Que changeriez-vous dans la manière dont ce cours a été enseigné ou évalué ?",
+    "Comment comptez-vous appliquer à l’avenir ce que vous avez appris dans ce cours ?"
+  ]
+}

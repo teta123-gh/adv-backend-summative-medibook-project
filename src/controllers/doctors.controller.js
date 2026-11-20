@@ -40,4 +40,18 @@ async function remove(req, res) {
   } catch (error) { mapDatabaseError(error); }
 }
 
-module.exports = { list, get, create, update, remove };
+async function statistics(req, res) {
+  const result = await doctors.getDoctorStatistics(parseId(req.params.id, 'doctor id'));
+  if (!result) throw new AppError('Doctor not found.', 404);
+  res.json({ statistics: result });
+}
+
+async function report(req, res) {
+  res.json({ doctors: await doctors.getDoctorsReport() });
+}
+
+async function busyDays(req, res) {
+  res.json({ busyDays: await doctors.getBusyDaysReport() });
+}
+
+module.exports = { list, get, create, update, remove, statistics, report, busyDays };
